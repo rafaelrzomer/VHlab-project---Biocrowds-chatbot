@@ -90,7 +90,7 @@ public class MemoryManager : MonoBehaviour
     // Salva os POIs visitados por todos os agentes em uma única operação
     public void SaveAllAgentsMemoryToJson(List<Agent> agents)
     {
-        string path = @"F:\RafaelZomer\BioCrowds-GS-main\simulation_memory.json";
+        string path = @"F:\RafaelZomer\VHlab-project---Biocrowds-chatbot\simulation_memory.json";
 
         SimulationMemoryData simulationData;
 

@@ -17,7 +17,7 @@ JSON  = "\033[32m"   # parsed structured output
 
 llm = ChatOllama(model="gpt-oss:120b-cloud", temperature=0.2, top_k=40, top_p=0.9)
 
-with open(r"F:\RafaelZomer\BioCrowds-GS-main\simulation_memory.json", "r", encoding="utf-8") as json_file:
+with open(r"F:\RafaelZomer\VHlab-project---Biocrowds-chatbot\simulation_memory.json", "r", encoding="utf-8") as json_file:
     data = json.load(json_file)
     
 def list_agents(data: dict) -> list[str]:
