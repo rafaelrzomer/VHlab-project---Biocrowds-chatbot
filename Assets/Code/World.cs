@@ -1,4 +1,4 @@
-﻿/// ---------------------------------------------
+/// ---------------------------------------------
 /// Contact: Henry Braun
 /// Brief: Defines the world environment
 /// Thanks to VHLab for original implementation

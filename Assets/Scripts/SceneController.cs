@@ -59,11 +59,6 @@ public class SceneController : MonoBehaviour
         if (_showAuxinVector != ShowAuxinVectors) ShowAuxinVectors = _showAuxinVector;
         if (_showNavMeshCorners != ShowNavMeshCorners) ShowNavMeshCorners = _showNavMeshCorners;
 
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            Debug.Log("Reloading Scene");
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
 
         if (Input.GetKeyDown(KeyCode.Alpha1) && !initialized)
         {

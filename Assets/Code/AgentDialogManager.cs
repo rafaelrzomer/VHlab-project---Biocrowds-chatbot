@@ -3,6 +3,9 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Collections;
+using UnityEngine.Networking;
+using Newtonsoft.Json.Linq;
 
 namespace Biocrowds.Core
 {
@@ -34,6 +37,9 @@ namespace Biocrowds.Core
         private string _lastSubmittedText;
         private Image _panelImage;
         private Agent _currentAgent;
+
+        [Header("Python")]
+        public string pythonUrl = "http://127.0.0.1:8000/chat";
 
         private void Awake()
         {
@@ -102,6 +108,12 @@ namespace Biocrowds.Core
             Debug.Log($"AgentDialogManager: exibindo diálogo do agente {agent.name}");
         }
 
+        private string ExtractResponse(string json)
+{
+        JObject result = JObject.Parse(json);
+        return result["response"]?.ToString() ?? json;
+}
+
         public void SubmitInput()
         {
             if (inputField == null)
@@ -141,8 +153,52 @@ namespace Biocrowds.Core
             Debug.Log("JSON DA CONVERSA:");
             Debug.Log(json);
 
-            if (submitResultText != null)
-                submitResultText.text = "JSON gerado. Veja o Console.";
+            StartCoroutine(SendToPython(json));
+        }
+
+        private IEnumerator SendToPython(string json)
+        {
+            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(json);
+
+            using (UnityWebRequest request =
+                new UnityWebRequest(pythonUrl, "POST"))
+            {
+                request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+                request.downloadHandler = new DownloadHandlerBuffer();
+
+                request.SetRequestHeader(
+                    "Content-Type",
+                    "application/json"
+                );
+
+                if (submitResultText != null)
+                    submitResultText.text = "Aguardando resposta...";
+
+                yield return request.SendWebRequest();
+
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    string response = request.downloadHandler.text;
+
+                    Debug.Log("Resposta do Python:");
+                    Debug.Log(response);
+
+                    if (submitResultText != null)
+                        submitResultText.text = ExtractResponse(response);
+                }
+                else
+                {
+                    Debug.LogError(
+                        $"Erro na comunicação com Python: {request.error}"
+                    );
+
+                    Debug.LogError(request.downloadHandler.text);
+
+                    if (submitResultText != null)
+                        submitResultText.text =
+                            "Erro ao conectar com o servidor Python.";
+                }
+            }
         }
 
         private void SetText(Text text, TMP_Text tmpText, string message)
