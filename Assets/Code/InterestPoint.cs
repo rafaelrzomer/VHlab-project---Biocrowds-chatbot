@@ -15,7 +15,7 @@ namespace Biocrowds.Core
         [Tooltip("Nome opcional do ponto de interesse.")]
         public string pointName = "Interest Point";
 
-        [TextArea(3, 5)]
+        [TextArea(3, 15)]
         [Tooltip("Descrição em formato JSON do ponto de interesse.")]
         public string pointDescription = "{}";
 

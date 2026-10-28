@@ -1,12 +1,24 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Biocrowds.Core
 {
+
+    [System.Serializable]
+     public class AgentChatRequest
+     {
+        public string agentName;
+        public string message;
+        public List<MemorizedInterestInfo> memory;
+    }
+        
     public class AgentDialogManager : MonoBehaviour
     {
         public static AgentDialogManager Instance { get; private set; }
+        
 
         [Header("Dialog Panel")]
         public GameObject dialogPanel;
@@ -21,6 +33,7 @@ namespace Biocrowds.Core
 
         private string _lastSubmittedText;
         private Image _panelImage;
+        private Agent _currentAgent;
 
         private void Awake()
         {
@@ -70,6 +83,8 @@ namespace Biocrowds.Core
                 return;
             }
 
+            _currentAgent = agent;
+
             dialogPanel.SetActive(true);
 
             if (_panelImage != null)
@@ -95,11 +110,39 @@ namespace Biocrowds.Core
                 return;
             }
 
-            _lastSubmittedText = inputField.text;
-            Debug.Log($"AgentDialogManager: texto enviado -> {_lastSubmittedText}");
+            if (_currentAgent == null)
+            {
+                Debug.LogWarning("Nenhum agente selecionado.");
+                return;
+            }
+
+            AgentCustom customAgent = _currentAgent as AgentCustom;
+
+            if (customAgent == null)
+            {
+                Debug.LogWarning("O agente selecionado não é um AgentCustom.");
+                return;
+            }
+
+            string message = inputField.text;
+
+            AgentChatRequest request = new AgentChatRequest
+            {
+                agentName = customAgent.name,
+                message = message,
+                memory = new List<MemorizedInterestInfo>(customAgent.InterestMemory)
+            };
+
+            string json = JsonConvert.SerializeObject(
+                request,
+                Formatting.Indented
+            );
+
+            Debug.Log("JSON DA CONVERSA:");
+            Debug.Log(json);
 
             if (submitResultText != null)
-                submitResultText.text = $"Enviado: {_lastSubmittedText}";
+                submitResultText.text = "JSON gerado. Veja o Console.";
         }
 
         private void SetText(Text text, TMP_Text tmpText, string message)

@@ -36,7 +36,7 @@ def select_agent(state: State) -> dict:
 
 
 def load_memory (state: State) -> dict:
-    # print(f"{NODE}📂 [load_memory] Carregando memória de {state['agent_name']}...{RST}")
+    # print(f"{NODE} [load_memory] Carregando memória de {state['agent_name']}...{RST}")
     agent = next(agent for agent in data["agents"] if agent["agentName"] == state["agent_name"])
     # print(f"{GRAY}    → {len(agent['visitedPOIs'])} obras encontradas{RST}")
     return {"agent_memory": agent["visitedPOIs"]}
@@ -64,7 +64,7 @@ def chat(state: State) -> dict:
     
     history = [SystemMessage(content=system_prompt)] + state["messages"]
     
-    # print(f"{NODE}📨 [chat] Mensagens enviadas pro Ollama:{RST}")
+    # print(f"{NODE} [chat] Mensagens enviadas pro Ollama:{RST}")
     # for msg in history:
     #    print(f"{GRAY}    [{msg.__class__.__name__}] {msg.content[:1000]}...{RST}")
     
