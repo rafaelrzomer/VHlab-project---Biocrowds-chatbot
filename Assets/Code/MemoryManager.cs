@@ -9,6 +9,11 @@ public class MemoryManager : MonoBehaviour
 {
     public static MemoryManager Instance { get; private set; }
 
+    private string MemoryFilePath => Path.Combine(
+        Application.persistentDataPath,
+        "simulation_memory.json"
+    );
+
     private void Awake()
     {
         if (Instance == null)
@@ -41,7 +46,7 @@ public class MemoryManager : MonoBehaviour
     //salva os POIs visitados por cada agente em um JSON
     public void SaveInterestMemoryToJson(string agentName, List<MemorizedInterestInfo> interestMemory)
     {
-        string path = @"F:\RafaelZomer\VHlab-project---Biocrowds-chatbot\simulation_memory.json";
+        string path = MemoryFilePath;
 
         SimulationMemoryData simulationData;
 
@@ -90,7 +95,7 @@ public class MemoryManager : MonoBehaviour
     // Salva os POIs visitados por todos os agentes em uma única operação
     public void SaveAllAgentsMemoryToJson(List<Agent> agents)
     {
-        string path = @"F:\RafaelZomer\VHlab-project---Biocrowds-chatbot\simulation_memory.json";
+        string path = MemoryFilePath;
 
         SimulationMemoryData simulationData;
 
