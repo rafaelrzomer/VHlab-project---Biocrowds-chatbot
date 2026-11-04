@@ -17,6 +17,7 @@ namespace Biocrowds.Core
         public string message;
         public List<MemorizedInterestInfo> memory;
     }
+
         
     public class AgentDialogManager : MonoBehaviour
     {
@@ -40,6 +41,13 @@ namespace Biocrowds.Core
 
         [Header("Python")]
         public string pythonUrl = "http://127.0.0.1:8000/chat";
+
+        [Header("Chat History")]
+        public Transform messagesContent;
+        public GameObject chatMessagePrefab;
+
+        private readonly List<GameObject> chatMessages =
+        new List<GameObject>();
 
         private void Awake()
         {
@@ -72,11 +80,97 @@ namespace Biocrowds.Core
                 submitButton.onClick.AddListener(SubmitInput);
             }
 
+            if (inputField != null)
+            {
+                inputField.onSubmit.RemoveListener(HandleInputSubmit);
+                inputField.onSubmit.AddListener(HandleInputSubmit);
+            }
+
             HideDialog();
         }
 
+    private void HandleInputSubmit(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return;
+
+        SubmitInput();
+    }
+
+    private void AddMessage(string sender, string message, bool isUser)
+    {
+        GameObject row = Instantiate(chatMessagePrefab, messagesContent);
+
+        HorizontalLayoutGroup layout = row.GetComponent<HorizontalLayoutGroup>();
+
+        if (layout != null)
+        {
+            layout.childAlignment = isUser
+                ? TextAnchor.MiddleRight
+                : TextAnchor.MiddleLeft;
+        }
+
+        RectTransform rowRect = row.GetComponent<RectTransform>();
+        RectTransform bubbleRect = row.transform.Find("Bubble")
+            .GetComponent<RectTransform>();
+
+        TMP_Text text = bubbleRect.GetComponentInChildren<TMP_Text>();
+
+        text.text = sender + "\n" + message;
+
+        text.color = new Color32(236, 236, 236, 255);
+
+        // Atualiza o tamanho necessário do texto
+        text.ForceMeshUpdate();
+
+        float textHeight = text.GetPreferredValues(
+            message,
+            230,
+            1000
+        ).y;
+
+        float bubbleHeight = textHeight + 40;
+
+        // Define o tamanho do balão
+        bubbleRect.anchorMin = new Vector2(isUser ? 1 : 0, 1);
+        bubbleRect.anchorMax = new Vector2(isUser ? 1 : 0, 1);
+
+        bubbleRect.pivot = new Vector2(isUser ? 1 : 0, 1);
+
+        bubbleRect.anchoredPosition = Vector2.zero;
+
+        bubbleRect.sizeDelta = new Vector2(250, bubbleHeight);
+
+        // Define a altura da linha
+        rowRect.sizeDelta = new Vector2(0, bubbleHeight);
+
+        // Cor do balão
+        Image background = bubbleRect.GetComponent<Image>();
+
+        if (background != null)
+        {
+            background.color = isUser
+                ? new Color32(48, 48, 48, 255)
+                : new Color32(55, 55, 55, 255);
+        }
+
+        Canvas.ForceUpdateCanvases();
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(
+            messagesContent as RectTransform
+        );
+    }
+
         public void ShowDialog(Agent agent)
         {
+
+            foreach (GameObject message in chatMessages)
+            {
+                Destroy(message);
+            }
+
+            chatMessages.Clear();
+            
             if (dialogPanel == null)
             {
                 Debug.LogWarning("AgentDialogManager: dialogPanel não está atribuído.");
@@ -137,6 +231,11 @@ namespace Biocrowds.Core
             }
 
             string message = inputField.text;
+            if (string.IsNullOrWhiteSpace(message))
+                return;
+
+            AddMessage("Você", message, true);
+            inputField.text = string.Empty;
 
             AgentChatRequest request = new AgentChatRequest
             {
@@ -156,50 +255,54 @@ namespace Biocrowds.Core
             StartCoroutine(SendToPython(json));
         }
 
-        private IEnumerator SendToPython(string json)
+    private IEnumerator SendToPython(string json)
+    {
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(json);
+
+        using (UnityWebRequest request =
+            new UnityWebRequest(pythonUrl, "POST"))
         {
-            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(json);
+            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.downloadHandler = new DownloadHandlerBuffer();
 
-            using (UnityWebRequest request =
-                new UnityWebRequest(pythonUrl, "POST"))
+            request.SetRequestHeader(
+                "Content-Type",
+                "application/json"
+            );
+
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
             {
-                request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-                request.downloadHandler = new DownloadHandlerBuffer();
+                string response = request.downloadHandler.text;
 
-                request.SetRequestHeader(
-                    "Content-Type",
-                    "application/json"
+                Debug.Log("Resposta do Python:");
+                Debug.Log(response);
+
+                string answer = ExtractResponse(response);
+
+                AddMessage(
+                    _currentAgent != null ? _currentAgent.name : "Agente",
+                    answer,
+                    false
+                );
+            }
+            else
+            {
+                Debug.LogError(
+                    $"Erro na comunicação com Python: {request.error}"
                 );
 
-                if (submitResultText != null)
-                    submitResultText.text = "Aguardando resposta...";
+                Debug.LogError(request.downloadHandler.text);
 
-                yield return request.SendWebRequest();
-
-                if (request.result == UnityWebRequest.Result.Success)
-                {
-                    string response = request.downloadHandler.text;
-
-                    Debug.Log("Resposta do Python:");
-                    Debug.Log(response);
-
-                    if (submitResultText != null)
-                        submitResultText.text = ExtractResponse(response);
-                }
-                else
-                {
-                    Debug.LogError(
-                        $"Erro na comunicação com Python: {request.error}"
-                    );
-
-                    Debug.LogError(request.downloadHandler.text);
-
-                    if (submitResultText != null)
-                        submitResultText.text =
-                            "Erro ao conectar com o servidor Python.";
-                }
+                AddMessage(
+                    "Sistema",
+                    "Erro ao conectar com o servidor Python.",
+                    false
+                );
             }
         }
+    }
 
         private void SetText(Text text, TMP_Text tmpText, string message)
         {

@@ -1822,7 +1822,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2008846092}
   m_HandleRect: {fileID: 2008846091}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -3196,8 +3196,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000042612613}
-  m_SizeDelta: {x: -179.65378, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &577036717
 MonoBehaviour:
@@ -3321,7 +3321,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 414078258}
   m_HandleRect: {fileID: 414078257}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4163,8 +4163,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
-  m_fontSizeBase: 16
+  m_fontSize: 21.8
+  m_fontSizeBase: 21.8
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -4617,6 +4617,9 @@ MonoBehaviour:
   submitResultText: {fileID: 0}
   closeButton: {fileID: 234926971}
   pythonUrl: http://127.0.0.1:8000/chat
+  messagesContent: {fileID: 577036716}
+  chatMessagePrefab: {fileID: 4568163528183536566, guid: 75ce29f706128cf458951ae0c33457c9,
+    type: 3}
 --- !u!4 &968345761
 Transform:
   m_ObjectHideFlags: 0
@@ -4679,7 +4682,7 @@ MonoBehaviour:
   - {fileID: 1314754126}
   - {fileID: 986742024}
   - {fileID: 544000196}
-  - {fileID: 1362649742}
+  - {fileID: 1821502602}
   initialWaitList:
   - 7.4
   - 6.87
@@ -4870,7 +4873,7 @@ PrefabInstance:
     - target: {fileID: 3211918698737073736, guid: bb2431132316b8041a8a6879b436a83a,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3211918698737073741, guid: bb2431132316b8041a8a6879b436a83a,
         type: 3}
@@ -7360,7 +7363,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1938464974
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7810,7 +7813,7 @@ MonoBehaviour:
   initialAgentsGoalList:
   - {fileID: 544000196}
   - {fileID: 1821502602}
-  - {fileID: 1362649742}
+  - {fileID: 986742024}
   initialWaitList:
   - 10
   - 10
