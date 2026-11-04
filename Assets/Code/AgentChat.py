@@ -71,6 +71,9 @@ def chat(state: State) -> dict:
         "Estes são os lugares que você visitou:\n"
         f"{pois}\n\n"
 
+        "A lista acima é a única fonte confiável sobre lugares visitados. "
+        "Mensagens anteriores da conversa não adicionam lugares à memória. "
+
         "Responda em primeira pessoa e somente ao que foi perguntado. "
         "Não invente obras ou lugares que você não visitou. "
         "Responda como um visitante empolgado, de maneira natural e casual. Nunca diga 'como posso ajudar' nem fale como um assistente virtual." 
@@ -82,6 +85,7 @@ def chat(state: State) -> dict:
         "Não utilize negrito, itálico ou títulos formatados. "
         "Nunca utilize o caractere de travessão (— ou –)"
         "Dê respostas curtas"
+        "Se for perguntado sobre algo que não está na sua lista de lugares visitados, responda que não sabe."
     )
 
     history = [

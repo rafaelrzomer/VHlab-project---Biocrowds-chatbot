@@ -34,7 +34,7 @@ public class SceneController : MonoBehaviour
     }
     void Start()
     {
-        Debug.Log("Press 1 to load world");
+        LoadWorld();
     }
 
     void Update()
@@ -59,18 +59,18 @@ public class SceneController : MonoBehaviour
         if (_showAuxinVector != ShowAuxinVectors) ShowAuxinVectors = _showAuxinVector;
         if (_showNavMeshCorners != ShowNavMeshCorners) ShowNavMeshCorners = _showNavMeshCorners;
 
+    }
 
-        if (Input.GetKeyDown(KeyCode.Alpha1) && !initialized)
-        {
-            Debug.Log("Loading World");
+    private void LoadWorld()
+    {
+        if (initialized || world == null)
+            return;
 
-            List<SpawnArea> _spawners = FindObjectsOfType<SpawnArea>().ToList();
-            foreach (SpawnArea s in _spawners)
-                s.ShowMesh(ShowSpawnAreas);
+        List<SpawnArea> _spawners = FindObjectsOfType<SpawnArea>().ToList();
+        foreach (SpawnArea s in _spawners)
+            s.ShowMesh(ShowSpawnAreas);
 
-            initialized = true;
-            world.LoadWorld();
-        }
-
+        initialized = true;
+        world.LoadWorld();
     }
 }

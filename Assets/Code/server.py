@@ -31,6 +31,7 @@ conversation_histories: dict[str, list[BaseMessage]] = {}
 # --------------------------------------------------
 
 class AgentChatRequest(BaseModel):
+    agentId: str = ""
     agentName: str
     message: str
     memory: list[dict[str, Any]] = Field(default_factory=list)
@@ -52,8 +53,9 @@ def chat_endpoint(request: AgentChatRequest):
     if not message:
         raise HTTPException(400, "A mensagem está vazia.")
 
-    # Recupera o histórico do agente
-    history = conversation_histories.get(agent_name, [])
+    # Separa conversas de instâncias distintas que compartilham o mesmo nome Unity.
+    conversation_id = request.agentId.strip() or agent_name
+    history = conversation_histories.get(conversation_id, [])
 
     # Monta o estado enviado ao LangGraph
     state: State = {
@@ -78,7 +80,7 @@ def chat_endpoint(request: AgentChatRequest):
         )
 
     # Atualiza o histórico
-    conversation_histories[agent_name] = result["messages"]
+    conversation_histories[conversation_id] = result["messages"]
 
     answer = result["response"]
 

@@ -165,7 +165,6 @@ namespace Biocrowds.Core
             //wait a little bit to start moving
             yield return new WaitForSeconds(1.0f);
             _isReady = true;
-            Debug.Break();
         }
 
         private IEnumerator CreateCells()
@@ -313,7 +312,7 @@ namespace Biocrowds.Core
         void Update()
         {
             //TODO: Modificar de time-deltatime para fixed frame
-            if (!_isReady)
+            if (!_isReady || Time.timeScale == 0f)
                 return;
 
             foreach (SpawnArea _area in spawnAreas)
